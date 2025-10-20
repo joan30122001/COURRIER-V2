@@ -1,0 +1,76 @@
+{% extends 'vertical.html' %}
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% load i18n %}
+
+{% block title %}Dashboard{% endblock title %}
+
+{% block page_title %}
+{% include 'partials/topbar.html' with topbarTitle='Dashboard' %}
+{% endblock page_title %}
+
+{% block page_content %}
+
+<div class="row row-cols-xxl- row-cols-md-2 row-cols-1">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header border-bottom border-dashed d-flex align-items-center">
+                <h4 class="header-title">Liste des Courriers</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <form method="get" class="d-flex align-items-end gap-2">
+                        <div class="input-group flex-grow-1">
+                            {% for field in courriers_filter.form %}
+                                {{ field }}
+                                {% if not forloop.last %}
+                                    <span class="input-group-text">|</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <button class="btn btn-primary" type="submit">Filtrer!</button>
+                    </form>
+
+
+
+                    <div class="table-responsive-sm mt-4">
+                        <table class="table mb-0">
+                            <caption>Liste des courriers</caption>
+                            <thead>
+                                <tr>
+                                    <th>Objet</th>
+                                    <th>Code</th>
+                                    <th>Type</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            {% for courrier in courriers_filter.qs %}
+                                <tbody>
+                                    <tr>
+                                        <td>{{courrier.objet}}</td>
+                                        <td>N° {{courrier.code}}</td>
+                                        <td><span class="badge bg-primary">{{courrier.types}}</span></td>
+                                        {%language 'fr' %}
+                                            <td>{{courrier.created_at}}</td>
+                                        {% endlanguage %}
+                                    </tr>
+                                </tbody>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock page_content %}
+
+{% block extra_javascript %}
+<script src="{% static '/vendor/apexcharts/apexcharts.min.js' %}"></script>
+<script src="{% static '/js/pages/dashboard.js' %}"></script>
+{% endblock extra_javascript %}

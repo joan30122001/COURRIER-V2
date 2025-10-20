@@ -1,0 +1,505 @@
+{% extends 'vertical.html' %}
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Dashboard{% endblock title %}
+
+{% block page_title %}
+{% include 'partials/topbar.html' with topbarTitle='Dashboard' %}
+{% endblock page_title %}
+
+{% block page_content %}
+
+<style>
+        .kpi-card {
+            border-left: 4px solid;
+            transition: transform 0.2s;
+        }
+        .kpi-card:hover {
+            transform: translateY(-5px);
+        }
+        .bg-primary { border-left-color: #0d6efd !important; }
+        .bg-success { border-left-color: #198754 !important; }
+        .bg-danger { border-left-color: #dc3545 !important; }
+        .bg-purple { 
+            background-color: #6f42c1; 
+            border-left-color: #59359a !important; 
+        }
+        .bg-warning { 
+            background-color: #ffc107; 
+            border-left-color: #d39e00 !important; 
+        }
+        .stat-table {
+            font-size: 0.9rem;
+        }
+        .stat-table th {
+            background-color: #f8f9fa;
+        }
+        .ri-icon {
+            font-size: 2rem;
+            opacity: 0.7;
+        }
+    </style>
+
+<div class="row row-cols-xxl- row-cols-md-2 row-cols-1">
+    
+    <!-- KPI Cards -->
+    <div class="row mb-4">
+        <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card kpi-card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Total Courriers</h6>
+                            <h2 class="mb-0">{{ total_courriers }}</h2>
+                        </div>
+                        <i class="ri-inbox-archive-fill ri-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+            
+        <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card kpi-card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Courriers Entrants</h6>
+                            <h2 class="mb-0">{{ courriers_entrants }}</h2>
+                        </div>
+                        <i class="ri-inbox-archive-fill ri-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+            
+        <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card kpi-card bg-danger text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Courriers Sortants</h6>
+                            <h2 class="mb-0">{{ courriers_sortants }}</h2>
+                        </div>
+                        <i class="ri-send-plane-fill ri-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card kpi-card bg-purple text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Taux d'Archivage</h6>
+                            <h2 class="mb-0">{{ taux_archivage }}%</h2>
+                        </div>
+                        <i class="ri-archive-drawer-fill ri-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+            
+        <!-- <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card kpi-card bg-warning text-dark">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Délai Moyen</h6>
+                            <h2 class="mb-0">{{ delai_moyen }} jours</h2>
+                        </div>
+                        <i class="ri-time-fill ri-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+    </div>
+        
+    <!-- Tableaux de statistiques -->
+    <div class="row mb-4">
+        <!-- Courriers par service -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">Répartition par Service</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 stat-table">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Service</th>
+                                    <th class="text-end">Nombre</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in courriers_par_service %}
+                                <tr>
+                                    <td>{{ item.service_traitement }}</td>
+                                    <td class="text-end">{{ item.count }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+            
+        <!-- Courriers par type -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">Répartition par Type</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 stat-table">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Type</th>
+                                    <th class="text-end">Nombre</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in courriers_par_type %}
+                                <tr>
+                                    <td>{{ item.types }}</td>
+                                    <td class="text-end">{{ item.count }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        
+    <div class="row mb-4">
+        <!-- Courriers par mention -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h5 class="card-title mb-0">Répartition par Mention</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 stat-table">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Mention</th>
+                                    <th class="text-end">Nombre</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in courriers_par_mention %}
+                                <tr>
+                                    <td>{{ item.mention }}</td>
+                                    <td class="text-end">{{ item.count }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+            
+        <!-- Activité récente -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="card-title mb-0">Activité Récente</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 stat-table">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Code</th>
+                                    <th>Type</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for courrier in courriers_recents %}
+                                <tr>
+                                    <td>{{ courrier.created_at|date:"d/m/Y" }}</td>
+                                    <td>{{ courrier.code }}</td>
+                                    <td>{{ courrier.types }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        
+    <!-- Courriers des 30 derniers jours -->
+    <div class="card shadow mb-4">
+        <div class="card-header bg-secondary text-white">
+            <h5 class="card-title mb-0">Courriers des 30 derniers jours</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 stat-table">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th class="text-end">Nombre de courriers</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in courriers_30_jours %}
+                        <tr>
+                            <td>{{ item.date_created|date:"d/m/Y" }}</td>
+                            <td class="text-end">{{ item.count }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Graphiques -->
+<div class="row mb-4">
+    <div class="col-lg-12 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-info text-white">
+                <h5 class="card-title mb-0">Évolution des courriers (30 jours)</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="graphiqueTemporel" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-12 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h5 class="card-title mb-0">Répartition par type</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="graphiqueType" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-lg-12 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">Répartition par service</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="graphiqueService" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-12 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-purple text-white">
+                <h5 class="card-title mb-0">Répartition par mention</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="graphiqueMention" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+    
+</div><!-- end row -->
+
+
+
+{% endblock page_content %}
+    
+{% block extra_javascript %}
+<script src="{% static '/vendor/apexcharts/apexcharts.min.js' %}"></script>
+<script src="{% static '/js/pages/dashboard.js' %}"></script>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+// Fonction pour initialiser les graphiques
+function initCharts() {
+    // Données pour les graphiques
+    const graphData = {
+        dates: {{ dates_json|safe }},
+        counts: {{ counts_json|safe }},
+        types: {{ courriers_par_type|safe }},
+        services: {{ courriers_par_service|safe }},
+        mentions: {{ courriers_par_mention|safe }}
+    };
+
+    console.log("Données des graphiques:", graphData); // Pour le débogage
+
+    // Graphique temporel (évolution sur 30 jours)
+    const temporelCtx = document.getElementById('graphiqueTemporel');
+    if (temporelCtx && graphData.dates && graphData.counts) {
+        new Chart(temporelCtx, {
+            type: 'line',
+            data: {
+                labels: graphData.dates,
+                datasets: [{
+                    label: 'Nombre de courriers par jour',
+                    data: graphData.counts,
+                    borderColor: 'rgb(13, 110, 253)',
+                    backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Évolution du nombre de courriers (30 derniers jours)'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Nombre de courriers'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Date'
+                        }
+                    }
+                }
+            }
+        });
+    } else {
+        console.error("Élément graphiqueTemporel non trouvé ou données manquantes");
+    }
+
+    // Graphique par type (camembert)
+    const typeCtx = document.getElementById('graphiqueType');
+    if (typeCtx && graphData.types && graphData.types.length > 0) {
+        new Chart(typeCtx, {
+            type: 'pie',
+            data: {
+                labels: graphData.types.map(item => item.types),
+                datasets: [{
+                    data: graphData.types.map(item => item.count),
+                    backgroundColor: [
+                        'rgb(13, 110, 253)',
+                        'rgb(25, 135, 84)',
+                        'rgb(220, 53, 69)',
+                        'rgb(255, 193, 7)',
+                        'rgb(111, 66, 193)',
+                        'rgb(32, 201, 151)',
+                        'rgb(253, 126, 20)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Répartition des courriers par type'
+                    },
+                    legend: {
+                        position: 'right'
+                    }
+                }
+            }
+        });
+    }
+
+    // Graphique par service (barres)
+    const serviceCtx = document.getElementById('graphiqueService');
+    if (serviceCtx && graphData.services && graphData.services.length > 0) {
+        new Chart(serviceCtx, {
+            type: 'bar',
+            data: {
+                labels: graphData.services.map(item => item.service_traitement),
+                datasets: [{
+                    label: 'Nombre de courriers',
+                    data: graphData.services.map(item => item.count),
+                    backgroundColor: 'rgb(25, 135, 84)'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Répartition des courriers par service'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Nombre de courriers'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Graphique par mention (doughnut)
+    const mentionCtx = document.getElementById('graphiqueMention');
+    if (mentionCtx && graphData.mentions && graphData.mentions.length > 0) {
+        new Chart(mentionCtx, {
+            type: 'doughnut',
+            data: {
+                labels: graphData.mentions.map(item => item.mention),
+                datasets: [{
+                    data: graphData.mentions.map(item => item.count),
+                    backgroundColor: [
+                        'rgb(13, 110, 253)',
+                        'rgb(25, 135, 84)',
+                        'rgb(220, 53, 69)',
+                        'rgb(255, 193, 7)',
+                        'rgb(111, 66, 193)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Répartition des courriers par mention'
+                    },
+                    legend: {
+                        position: 'right'
+                    }
+                }
+            }
+        });
+    }
+}
+
+// Initialiser les graphiques lorsque le DOM est chargé
+document.addEventListener('DOMContentLoaded', initCharts);
+</script>
+{% endblock extra_javascript %}
+
+

@@ -1,0 +1,52 @@
+{% extends 'vertical.html' %}
+
+{% load static %}
+
+{% block title %}Apex Funnel Charts{% endblock title %}
+
+{% block extra_css %}{% endblock extra_css %}
+
+{% block page_title %}
+{% include 'partials/topbar.html' with topbarTitle='Funnel Charts' %}
+{% endblock page_title %}
+
+{% block page_content %}
+
+<div class="row">
+    <div class="col-xl-6">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="header-title mb-4">Funnel Chart</h4>
+                <div dir="ltr">
+                    <div id="funnel-chart" class="apex-charts" data-colors="#39afd1"></div>
+                </div>
+            </div>
+            <!-- end card body-->
+        </div>
+        <!-- end card -->
+    </div>
+    <!-- end col-->
+
+    <div class="col-xl-6">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="header-title mb-4">Pyramid Chart</h4>
+                <div dir="ltr">
+                    <div id="pyramid-chart" class="apex-charts" data-colors="#45bbe0,#f9bc0b,#777edd,#0acf97"></div>
+                </div>
+            </div>
+            <!-- end card body-->
+        </div>
+        <!-- end card -->
+    </div>
+    <!-- end col-->
+</div>
+
+{% endblock page_content %}
+
+{% block extra_javascript %}
+<script src="{% static '/vendor/apexcharts/apexcharts.min.js' %}"></script>
+
+<!-- Apex Chart Funnel Demo js -->
+<script src="{% static '/js/components/chart-apex-funnel.js' %}"></script>
+{% endblock extra_javascript %}

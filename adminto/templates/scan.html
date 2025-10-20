@@ -1,0 +1,279 @@
+{% extends 'vertical.html' %}
+
+{% load static %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block title %}Dashboard{% endblock title %}
+
+{% block page_title %}
+{% include 'partials/topbar.html' with topbarTitle='Dashboard' %}
+{% endblock page_title %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.0.0/dist/css/tom-select.css">
+<style>
+/* Design moderne pour le select */
+.ts-control {
+    border: 2px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    padding: 12px 16px !important;
+    background: #ffffff !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    font-size: 14px !important;
+    min-height: 52px !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.ts-control:hover {
+    border-color: #cbd5e0 !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+}
+
+.ts-control.focus {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15) !important;
+    transform: translateY(-1px);
+}
+
+.ts-wrapper.single .ts-control {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
+}
+
+/* Dropdown moderne */
+.ts-dropdown {
+    border: 2px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1) !important;
+    background: #ffffff !important;
+    margin-top: 8px !important;
+    overflow: hidden;
+}
+
+.ts-dropdown .option {
+    padding: 14px 20px !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    font-size: 14px !important;
+    transition: all 0.2s ease !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.ts-dropdown .option:last-child {
+    border-bottom: none !important;
+}
+
+.ts-dropdown .option:hover {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%) !important;
+    transform: translateX(4px);
+}
+
+.ts-dropdown .active {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+    color: white !important;
+    position: relative;
+}
+
+.ts-dropdown .active:before {
+    content: "✓";
+    position: absolute;
+    right: 16px;
+    font-weight: bold;
+}
+
+/* Input dans le select */
+.ts-control input {
+    color: #1e293b !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+}
+
+/* Placeholder */
+.ts-control .items .placeholder {
+    color: #64748b !important;
+    font-style: italic !important;
+}
+
+/* Icône de flèche personnalisée */
+.ts-control:after {
+    border-color: #64748b transparent transparent transparent !important;
+    border-width: 6px 5px 0 5px !important;
+    margin-top: -3px !important;
+    transition: transform 0.3s ease !important;
+}
+
+.ts-control.dropdown-active:after {
+    transform: rotate(180deg);
+    margin-top: 3px !important;
+}
+
+/* Badge pour les éléments sélectionnés */
+.ts-control .item {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+    color: white !important;
+    border-radius: 8px !important;
+    padding: 6px 12px !important;
+    margin: 2px !important;
+    font-weight: 500 !important;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3) !important;
+}
+
+/* Animation de chargement */
+.ts-control .spinner {
+    border: 2px solid #f3f4f6;
+    border-top: 2px solid #3b82f6;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    animation: spin 1s linear infinite;
+    margin-right: 8px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .ts-control {
+        padding: 14px 16px !important;
+        font-size: 16px !important; /* Évite le zoom sur iOS */
+    }
+}
+
+/* Effet de focus pour l'accessibilité */
+.ts-control .focus-visible {
+    outline: 2px solid #3b82f6 !important;
+    outline-offset: 2px !important;
+}
+</style>
+{% endblock extra_css %}
+
+{% block page_content %}
+
+<div class="row row-cols-xxl- row-cols-md-2 row-cols-1">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header border-bottom border-dashed d-flex align-items-center">
+                <h4 class="header-title">Scan de Courrier Physique</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% include 'messages.html' %}
+                    {% include 'messages_form.html' %}
+                    <form class="d-grid" name="contactForm" enctype="multipart/form-data" method="POST" onsubmit="return validateForm()">
+                        {% csrf_token %}
+                        
+                        <!-- Style personnalisé pour le champ courrier -->
+                        <div class="mb-3 modern-select-wrapper">
+                            <label for="id_courrier" class="form-label fw-semibold">
+                                Code du Courrier
+                            </label>
+                            {{ form.courrier }}
+                            <div class="form-text text-muted">
+                                Tapez pour rechercher un code de courrier
+                            </div>
+                        </div>
+                        
+                        <!-- Rendre les autres champs crispy normalement -->
+                        {% for field in form %}
+                            {% if field.name != 'courrier' %}
+                                {{ field|as_crispy_field }}
+                            {% endif %}
+                        {% endfor %}
+                        
+                        <button type="submit" id="" class="btn btn-primary mt-4"> Enregistrer!</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock page_content %}
+
+{% block extra_javascript %}
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.0.0/dist/js/tom-select.complete.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const el = document.querySelector('select.js-courrier-search') || document.getElementById('id_courrier');
+    if (!el) return;
+
+    // Destroy existing instance
+    if (el.tomselect) {
+        el.tomselect.destroy();
+    }
+
+    // Modern Tom Select configuration
+    new TomSelect(el, {
+        create: false,
+        searchField: ['text'],
+        sortField: { field: 'text', direction: 'asc' },
+        placeholder: '🔍 Tapez pour rechercher un code...',
+        allowEmptyOption: false,
+        maxOptions: null,
+        loadThrottle: 300,
+        loadingClass: 'loading',
+        
+        // Render modern templates
+        render: {
+            option: function(data, escape) {
+                return `
+                    <div class="d-flex align-items-center">
+                        <i class="ri-mail-open-line me-3 text-primary"></i>
+                        <div>
+                            <div class="fw-semibold">${escape(data.text)}</div>
+                            <small class="text-muted">Code courrier</small>
+                        </div>
+                    </div>
+                `;
+            },
+            item: function(data, escape) {
+                return `
+                    <div class="d-flex align-items-center">
+                        <i class="ri-checkbox-circle-fill me-2 text-success"></i>
+                        <span class="fw-medium">${escape(data.text)}</span>
+                    </div>
+                `;
+            },
+            no_results: function(data, escape) {
+                return `
+                    <div class="text-center p-3">
+                        <i class="ri-search-line ri-2x text-muted mb-2"></i>
+                        <div class="fw-medium">Aucun résultat trouvé</div>
+                        <small class="text-muted">Essayez un autre code</small>
+                    </div>
+                `;
+            },
+            loading: function(data, escape) {
+                return `
+                    <div class="d-flex align-items-center justify-content-center p-3">
+                        <div class="spinner me-3"></div>
+                        <span class="text-muted">Recherche en cours...</span>
+                    </div>
+                `;
+            }
+        },
+        
+        // Events for modern interactions
+        onInitialize: function() {
+            console.log('Select moderne initialisé');
+        },
+        
+        onFocus: function() {
+            this.control.classList.add('focused');
+        },
+        
+        onBlur: function() {
+            this.control.classList.remove('focused');
+        }
+    });
+
+    // Hide original select
+    el.style.display = 'none';
+});
+</script>
+{% endblock extra_javascript %}

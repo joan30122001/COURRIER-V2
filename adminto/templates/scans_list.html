@@ -1,0 +1,149 @@
+{% extends 'vertical.html' %}
+{% load static %}
+
+{% block title %}Courriers scannés{% endblock %}
+{% block page_title %}
+  {% include 'partials/topbar.html' with topbarTitle='Courriers scannés' %}
+{% endblock %}
+
+{% block page_content %}
+<div class="card">
+  <div class="card-header border-bottom border-dashed">
+    <form method="get" class="d-flex gap-2">
+      <input name="q" value="{{ q }}" class="form-control" placeholder="Rechercher par code ou titre…">
+      <button class="btn btn-primary">Rechercher</button>
+    </form>
+  </div>
+
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Titre</th>
+            <th>Fichier</th>
+            <th>Créé le</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in scans %}
+          <tr>
+            <td>{{ s.courrier.code }}</td>
+            <td>{{ s.name }}</td>
+            <td>{{ s.file.name|default:"—"|cut:"fichier/" }}</td>
+            <td>{{ s.created_at|date:"d/m/Y H:i" }}</td>
+            <td class="text-end">
+              <button type="button"
+                      class="btn btn-outline-secondary btn-sm"
+                      data-preview-url="{% url 'senat:scan_preview' s.pk %}"
+                      data-filename="{{ s.file.name|cut:'fichier/' }}"
+                      onclick="openPreview(this)">
+                Aperçu
+              </button>
+              <a class="btn btn-primary btn-sm"
+                 href="{% url 'senat:scan_download' s.pk %}">
+                Télécharger
+              </a>
+              <!-- <a class="btn btn-success btn-sm"
+                href="{% url 'senat:scan_download_gemini' s.pk %}">
+                PDF (texte natif)
+              </a> -->
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="5" class="text-center text-muted py-4">Aucun scan pour le moment.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% if scans.paginator.num_pages > 1 %}
+    <nav class="mt-3">
+      <ul class="pagination justify-content-end">
+        {% if scans.has_previous %}
+        <li class="page-item"><a class="page-link" href="?q={{ q }}&page={{ scans.previous_page_number }}">Précédent</a></li>
+        {% else %}<li class="page-item disabled"><span class="page-link">Précédent</span></li>{% endif %}
+
+        <li class="page-item disabled"><span class="page-link">Page {{ scans.number }} / {{ scans.paginator.num_pages }}</span></li>
+
+        {% if scans.has_next %}
+        <li class="page-item"><a class="page-link" href="?q={{ q }}&page={{ scans.next_page_number }}">Suivant</a></li>
+        {% else %}<li class="page-item disabled"><span class="page-link">Suivant</span></li>{% endif %}
+      </ul>
+    </nav>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Modal d'aperçu -->
+<div class="modal fade" id="previewModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 id="previewTitle" class="modal-title">Aperçu</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+      <div class="modal-body">
+        <div id="previewContainer" class="w-100 d-flex justify-content-center align-items-center" style="min-height:60vh;"></div>
+      </div>
+      <div class="modal-footer">
+        <a id="downloadFromModal" class="btn btn-primary" href="#" download>Télécharger</a>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_javascript %}
+<script>
+function isPdf(url){
+  return /\.pdf(\?|$)/i.test(url);
+}
+function isImage(url){
+  return /\.(png|jpe?g|gif|webp|bmp|svg)(\?|$)/i.test(url);
+}
+
+function openPreview(btn){
+  const url = btn.getAttribute('data-preview-url');
+  const name = btn.getAttribute('data-filename') || 'fichier';
+
+  const container = document.getElementById('previewContainer');
+  const title = document.getElementById('previewTitle');
+  const dl = document.getElementById('downloadFromModal');
+
+  container.innerHTML = '';
+  title.textContent = `Aperçu — ${name}`;
+  dl.href = url; // on peut aussi mettre l'URL de download si tu préfères
+
+  if (isPdf(url)) {
+    const embed = document.createElement('embed');
+    embed.src = url;
+    embed.type = 'application/pdf';
+    embed.style.width = '100%';
+    embed.style.height = '75vh';
+    container.appendChild(embed);
+  } else if (isImage(url)) {
+    const img = document.createElement('img');
+    img.src = url;
+    img.alt = name;
+    img.style.maxWidth = '100%';
+    img.style.maxHeight = '75vh';
+    img.style.objectFit = 'contain';
+    container.appendChild(img);
+  } else {
+    // Pour tout autre type, on ouvre quand même en inline; s'il ne sait pas l'afficher, l'utilisateur peut télécharger
+    const iframe = document.createElement('iframe');
+    iframe.src = url;
+    iframe.style.width = '100%';
+    iframe.style.height = '75vh';
+    container.appendChild(iframe);
+  }
+
+  const modal = new bootstrap.Modal(document.getElementById('previewModal'));
+  modal.show();
+}
+</script>
+{% endblock %}

@@ -1,0 +1,137 @@
+{% extends 'vertical.html' %}
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Dashboard{% endblock title %}
+
+{% block page_title %}
+{% include 'partials/topbar.html' with topbarTitle='Dashboard' %}
+{% endblock page_title %}
+
+{% block page_content %}
+
+<div class="row row-cols-xxl- row-cols-md-2 row-cols-1">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header border-bottom border-dashed d-flex align-items-center">
+                <h4 class="header-title">Enregistrer un Courrier</h4>
+            </div>
+
+            <div class="card-body">
+                
+                <div class="row">
+                    {% include 'messages.html' %}
+                    {% if courrier %}
+                        {% for courriers in courrier %}
+                            <!-- Affichage des champs readonly -->
+                            <form method="POST" class="mb-4 d-grid">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label class="form-label">Emetteur</label>
+                                    <input type="text" class="form-control" value="{{ courriers.transmetteur|upper }}" readonly>
+                                    <div class="form-text">Emetteur du courrier</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Récepteur</label>
+                                    <input type="text" class="form-control" value="{{ courriers.recepteur|upper }}" readonly>
+                                    <div class="form-text">Recepteur du courrier</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Code</label>
+                                    <input type="text" class="form-control" value="{{ courriers.code|upper }}" readonly>
+                                    <div class="form-text">Code du courrier</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Type</label>
+                                    <input type="text" class="form-control" value="{{ courriers.types|upper }}" readonly>
+                                    <div class="form-text">Type du courrier</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Objet</label>
+                                    <input type="text" class="form-control" value="{{ courriers.objet|upper }}" readonly>
+                                    <div class="form-text">Objete du courrier</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Structure</label>
+                                    <input type="text" class="form-control" value="{{ courriers.structure|upper }}" readonly>
+                                    <div class="form-text">Structure en charge du courrier</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Date</label>
+                                    <input type="text" class="form-control" value="{{ courriers.date|default:'/'|upper }}" readonly>
+                                    <div class="form-text">Date d'enregistrement du courrier</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Année</label>
+                                    <input type="text" class="form-control" value="{{ courriers.annee|default:'/'|upper }}" readonly>
+                                    <div class="form-text">Année de dépôt du courrier</div>
+                                </div>
+
+
+                                {% if courriers.mention and courriers.service_traitement %}
+                                    <div class="mb-3">
+                                        <label class="form-label">Service de traitement</label>
+                                        <input type="text" class="form-control" value="{{ courriers.service_traitement|upper }}" readonly>
+                                        <div class="form-text">Service de traitement du courrier</div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Mention</label>
+                                        <input type="text" class="form-control" value="{{ courriers.mention|upper }}" readonly>
+                                        <div class="form-text">Mention du courrier</div>
+                                    </div>
+                                {% else %}
+                                    <!-- Formulaire dynamique stylé comme avec crispy -->
+                                    {{ form|crispy }}
+                                    <button type="submit" class="btn btn-primary mt-2">Enregistrer !</button>
+                                {% endif %}
+                            </form>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div><!-- end col -->
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="d-flex card-header justify-content-between align-items-center">
+                <div>
+                    <h4 class="header-title">Guide</h4>
+                </div>
+            </div>
+
+            <div class="card-body pt-0">
+                <div class="d-flex align-items-center gap-2 justify-content-between">
+                    <p class="text-muted mb-0">
+                        Une fois sur cette page vous avez la possibilité de vous <b>déconnecter</b>, <b>d'enregistrer un courrier</b> en 
+                        renseignant <b>le service de traitement et la mention du courrier</b> qui sont tous des champs <b>obligatoires</b> et en cliquant
+                        sur <b>enregistrer</b>, vous allez recevoir un message de succès dans le cas ou les champs sont bien remplis et votre mission est terminé.
+                    </p>
+                </div>
+
+                <div class="progress progress-soft progress-sm mt-3">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="25"
+                        aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+        </div>
+    </div><!-- end col -->
+</div><!-- end row -->
+
+
+
+{% endblock page_content %}
+
+{% block extra_javascript %}
+<script src="{% static '/vendor/apexcharts/apexcharts.min.js' %}"></script>
+<script src="{% static '/js/pages/dashboard.js' %}"></script>
+{% endblock extra_javascript %}

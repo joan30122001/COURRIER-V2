@@ -1,0 +1,554 @@
+{% extends 'vertical.html' %}
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Dashboard{% endblock title %}
+
+{% block page_title %}
+{% include 'partials/topbar.html' with topbarTitle='Dashboard' %}
+{% endblock page_title %}
+
+{% block page_content %}
+
+<style>
+    .kpi-card {
+        border-left: 4px solid;
+        transition: transform 0.2s;
+        height: 100%;
+    }
+    .kpi-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .kpi-primary { 
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+        border-left-color: #0a58ca !important; 
+    }
+    .kpi-success { 
+        background: linear-gradient(135deg, #198754 0%, #146c43 100%);
+        border-left-color: #146c43 !important; 
+    }
+    .kpi-danger { 
+        background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%);
+        border-left-color: #b02a37 !important; 
+    }
+    .kpi-purple { 
+        background: linear-gradient(135deg, #6f42c1 0%, #59359a 100%);
+        border-left-color: #59359a !important; 
+    }
+    .kpi-warning { 
+        background: linear-gradient(135deg, #ffc107 0%, #d39e00 100%);
+        border-left-color: #d39e00 !important; 
+    }
+    .stat-table {
+        font-size: 0.9rem;
+    }
+    .stat-table th {
+        background-color: #f8f9fa;
+    }
+    .ri-icon {
+        font-size: 2.5rem;
+        opacity: 0.8;
+    }
+    .chart-container {
+        position: relative;
+        height: 300px;
+        width: 100%;
+    }
+    .card-header {
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+    .section-title {
+        border-left: 4px solid #0d6efd;
+        padding-left: 15px;
+        margin-bottom: 25px;
+    }
+</style>
+
+<div class="container-fluid">
+    <!-- Section KPI -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3 class="section-title">Indicateurs Clés</h3>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card kpi-card kpi-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-2">Total Courriers</h6>
+                            <h2 class="mb-0">{{ total_courriers }}</h2>
+                            <small class="opacity-75">Tous types confondus</small>
+                        </div>
+                        <i class="ri-inbox-archive-fill ri-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+            
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card kpi-card kpi-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-2">Courriers Entrants</h6>
+                            <h2 class="mb-0">{{ courriers_entrants }}</h2>
+                            <small class="opacity-75">Lettres, requêtes, notes</small>
+                        </div>
+                        <i class="ri-download-cloud-2-fill ri-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+            
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card kpi-card kpi-danger text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-2">Courriers Sortants</h6>
+                            <h2 class="mb-0">{{ courriers_sortants }}</h2>
+                            <small class="opacity-75">Décisions, projets de loi</small>
+                        </div>
+                        <i class="ri-send-plane-fill ri-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card kpi-card kpi-purple text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-2">Taux d'Archivage</h6>
+                            <h2 class="mb-0">{{ taux_archivage }}%</h2>
+                            <small class="opacity-75">Courriers traités</small>
+                        </div>
+                        <i class="ri-archive-drawer-fill ri-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section Graphiques -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3 class="section-title">Graphiques Statistiques</h3>
+        </div>
+        
+        <div class="col-xl-6 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-transparent border-bottom-0 py-3">
+                    <h5 class="card-title mb-0 text-primary">
+                        <i class="ri-line-chart-fill me-2"></i>Évolution (30 jours)
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="graphiqueTemporel"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-6 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-transparent border-bottom-0 py-3">
+                    <h5 class="card-title mb-0 text-success">
+                        <i class="ri-pie-chart-2-fill me-2"></i>Répartition par Type
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="graphiqueType"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-6 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-transparent border-bottom-0 py-3">
+                    <h5 class="card-title mb-0 text-info">
+                        <i class="ri-bar-chart-fill me-2"></i>Répartition par Service
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="graphiqueService"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-6 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-transparent border-bottom-0 py-3">
+                    <h5 class="card-title mb-0 text-purple">
+                        <i class="ri-donut-chart-fill me-2"></i>Répartition par Mention
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="graphiqueMention"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section Tableaux -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3 class="section-title">Détails par Catégorie</h3>
+        </div>
+        
+        <div class="col-xl-4 col-lg-6 mb-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-light border-bottom-0 py-3">
+                    <h5 class="card-title mb-0">
+                        <i class="ri-building-fill me-2 text-primary"></i>Par Service
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 stat-table">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Service</th>
+                                    <th class="text-end">Nombre</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in courriers_par_service %}
+                                <tr>
+                                    <td class="text-truncate" style="max-width: 200px;" title="{{ item.service_traitement }}">
+                                        {{ item.service_traitement }}
+                                    </td>
+                                    <td class="text-end fw-bold">{{ item.count }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+            
+        <div class="col-xl-4 col-lg-6 mb-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-light border-bottom-0 py-3">
+                    <h5 class="card-title mb-0">
+                        <i class="ri-file-list-fill me-2 text-success"></i>Par Type
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 stat-table">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Type</th>
+                                    <th class="text-end">Nombre</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in courriers_par_type %}
+                                <tr>
+                                    <td>{{ item.types }}</td>
+                                    <td class="text-end fw-bold">{{ item.count }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-4 col-lg-6 mb-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-light border-bottom-0 py-3">
+                    <h5 class="card-title mb-0">
+                        <i class="ri-price-tag-3-fill me-2 text-info"></i>Par Mention
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 stat-table">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Mention</th>
+                                    <th class="text-end">Nombre</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in courriers_par_mention %}
+                                <tr>
+                                    <td>{{ item.mention }}</td>
+                                    <td class="text-end fw-bold">{{ item.count }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section Activité -->
+    <div class="row">
+        <div class="col-xl-8 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-light border-bottom-0 py-3">
+                    <h5 class="card-title mb-0">
+                        <i class="ri-history-fill me-2 text-warning"></i>Activité Récente
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Code</th>
+                                    <th>Type</th>
+                                    <th>Service</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for courrier in courriers_recents %}
+                                <tr>
+                                    <td class="text-nowrap">{{ courrier.created_at|date:"d/m/Y" }}</td>
+                                    <td><span class="badge bg-primary">{{ courrier.code }}</span></td>
+                                    <td>{{ courrier.types }}</td>
+                                    <td class="text-truncate" style="max-width: 150px;" title="{{ courrier.service_traitement }}">
+                                        {{ courrier.service_traitement }}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-4 mb-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-light border-bottom-0 py-3">
+                    <h5 class="card-title mb-0">
+                        <i class="ri-calendar-2-fill me-2 text-secondary"></i>30 Derniers Jours
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th class="text-end">Nombre</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in courriers_30_jours %}
+                                <tr>
+                                    <td class="text-nowrap">{{ item.date_created|date:"d/m/Y" }}</td>
+                                    <td class="text-end fw-bold">{{ item.count }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock page_content %}
+    
+{% block extra_javascript %}
+<script src="{% static '/vendor/apexcharts/apexcharts.min.js' %}"></script>
+<script src="{% static '/js/pages/dashboard.js' %}"></script>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+// Fonction pour initialiser les graphiques
+function initCharts() {
+    // Données pour les graphiques
+    const graphData = {
+        dates: {{ dates_json|safe }},
+        counts: {{ counts_json|safe }},
+        types: {{ courriers_par_type|safe }},
+        services: {{ courriers_par_service|safe }},
+        mentions: {{ courriers_par_mention|safe }}
+    };
+
+    console.log("Données des graphiques:", graphData);
+
+    // Graphique temporel (évolution sur 30 jours)
+    const temporelCtx = document.getElementById('graphiqueTemporel');
+    if (temporelCtx && graphData.dates && graphData.counts) {
+        new Chart(temporelCtx, {
+            type: 'line',
+            data: {
+                labels: graphData.dates,
+                datasets: [{
+                    label: 'Nombre de courriers par jour',
+                    data: graphData.counts,
+                    borderColor: '#0d6efd',
+                    backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            drawBorder: false
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Graphique par type (camembert)
+    const typeCtx = document.getElementById('graphiqueType');
+    if (typeCtx && graphData.types && graphData.types.length > 0) {
+        new Chart(typeCtx, {
+            type: 'doughnut',
+            data: {
+                labels: graphData.types.map(item => item.types),
+                datasets: [{
+                    data: graphData.types.map(item => item.count),
+                    backgroundColor: [
+                        '#0d6efd', '#198754', '#dc3545', '#ffc107', 
+                        '#6f42c1', '#20c997', '#fd7e14', '#6c757d'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            boxWidth: 12,
+                            padding: 15
+                        }
+                    }
+                },
+                cutout: '60%'
+            }
+        });
+    }
+
+    // Graphique par service (barres)
+    const serviceCtx = document.getElementById('graphiqueService');
+    if (serviceCtx && graphData.services && graphData.services.length > 0) {
+        new Chart(serviceCtx, {
+            type: 'bar',
+            data: {
+                labels: graphData.services.map(item => item.service_traitement),
+                datasets: [{
+                    label: 'Nombre de courriers',
+                    data: graphData.services.map(item => item.count),
+                    backgroundColor: '#20c997',
+                    borderWidth: 0,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            drawBorder: false
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Graphique par mention (doughnut)
+    const mentionCtx = document.getElementById('graphiqueMention');
+    if (mentionCtx && graphData.mentions && graphData.mentions.length > 0) {
+        new Chart(mentionCtx, {
+            type: 'pie',
+            data: {
+                labels: graphData.mentions.map(item => item.mention),
+                datasets: [{
+                    data: graphData.mentions.map(item => item.count),
+                    backgroundColor: [
+                        '#0d6efd', '#198754', '#dc3545', '#ffc107', '#6f42c1'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            boxWidth: 12,
+                            padding: 15
+                        }
+                    }
+                }
+            }
+        });
+    }
+}
+
+// Initialiser les graphiques lorsque le DOM est chargé
+document.addEventListener('DOMContentLoaded', initCharts);
+</script>
+{% endblock extra_javascript %}

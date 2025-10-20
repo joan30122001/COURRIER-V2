@@ -1,0 +1,116 @@
+{% extends 'vertical.html' %}
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% load i18n %}
+
+{% block title %}Dashboard{% endblock title %}
+
+{% block page_title %}
+{% include 'partials/topbar.html' with topbarTitle='Dashboard' %}
+{% endblock page_title %}
+
+{% block page_content %}
+
+<div class="row row-cols-xxl- row-cols-md-2 row-cols-1">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header border-bottom border-dashed d-flex align-items-center">
+                <h4 class="header-title">Envoi de message</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% include 'messages.html' %}
+                    {% include 'messages_form.html' %}
+                    <form class="d-grid" name="contactForm" enctype="multipart/form-data" method="POST" onsubmit="return validateForm()">
+                        {% csrf_token %}
+                        <div class="mb-2">
+                            <label for="msgto" class="form-label">Titre</label>
+                            <input type="text" id="title" class="form-control" name="name" placeholder="Titre...">
+                        </div>
+                        <div class="mb-2">
+                            <label for="msgto" class="form-label">Email</label>
+                            <input type="text" id="msgto" class="form-control" name="email" placeholder="Example@email.com">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Message</label>
+                            <textarea placeholder="Message" class="form-control" name="message"></textarea>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label">Fichier</label>
+                            <input type="file" class="form-control" id="attachment" name="attachment">
+                        </div>  
+
+                        <button type="submit" class="btn btn-primary">Envoyer un message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock page_content %}
+
+{% block extra_javascript %}
+<script src="{% static '/vendor/apexcharts/apexcharts.min.js' %}"></script>
+<script src="{% static '/js/pages/dashboard.js' %}"></script>
+<!-- <script>
+    function validateForm(){
+        let name = document.forms['contactForm']['name'].value;
+        let email = document.forms['contactForm']['email'].value;
+        let message = document.forms['contactForm']['message'].value;
+  
+        if (name == '' || hasNumber(name)){
+            alert('Name must be filled out and must only contain letters');
+            return false;
+        }
+        else if (email == ''){
+            alert('Email must be filled out');
+            return false;
+        } else if (!(email.includes('@'))){
+            alert('Email does not seem to be valid');
+            return false;
+        } 
+        else if (message == ''){
+            alert('Message must be filled out');
+            return false;
+        }
+    }
+  
+    function hasNumber(myString) {
+        return /\d/.test(myString);
+    }
+</script> -->
+<script>
+    function validateForm(){
+        let name = document.forms['contactForm']['name'].value;
+        let email = document.forms['contactForm']['email'].value;
+        let message = document.forms['contactForm']['message'].value;
+
+        if (name == '' || hasNumber(name)){
+            alert('Name must be filled out and must only contain letters');
+            return false;
+        } else if (email == '') {
+            alert('Email must be filled out');
+            return false;
+        } else if (!(email.includes('@'))) {
+            alert('Email does not seem to be valid');
+            return false;
+        } else if (message == '') {
+            alert('Message must be filled out');
+            return false;
+        }
+
+        return true; // allow submission if all fields are valid
+    }
+
+    function hasNumber(myString) {
+        return /\d/.test(myString);
+    }
+</script>
+
+
+{% endblock extra_javascript %}

@@ -1,0 +1,126 @@
+{% extends 'vertical.html' %}
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% load i18n %}
+
+{% block title %}Dashboard{% endblock title %}
+
+{% block page_title %}
+{% include 'partials/topbar.html' with topbarTitle='Dashboard' %}
+{% endblock page_title %}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css">
+<style>
+/* Améliorations minimales pour plus de praticité */
+.ts-control {
+    border: 2px solid #dee2e6 !important;
+    border-radius: 8px !important;
+    padding: 10px 12px !important;
+    font-size: 14px !important;
+    transition: all 0.2s ease !important;
+}
+
+.ts-control:focus,
+.ts-control.focus {
+    border-color: #0d6efd !important;
+    box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.1) !important;
+}
+
+.ts-dropdown {
+    border: 2px solid #dee2e6 !important;
+    border-radius: 8px !important;
+    margin-top: 4px !important;
+}
+
+.ts-dropdown .option {
+    padding: 10px 12px !important;
+    border-bottom: 1px solid #f8f9fa !important;
+}
+
+.ts-dropdown .active {
+    background-color: #0d6efd !important;
+    color: white !important;
+}
+
+/* Amélioration de la visibilité au survol */
+.ts-dropdown .option:hover {
+    background-color: #f8f9fa !important;
+}
+
+/* Meilleur contraste pour le texte */
+.ts-control input {
+    color: #212529 !important;
+}
+</style>
+
+{% block page_content %}
+
+<div class="row row-cols-xxl- row-cols-md-2 row-cols-1">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header border-bottom border-dashed d-flex align-items-center">
+                <h4 class="header-title">Scan de Courrier Physique</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% include 'messages.html' %}
+                    {% include 'messages_form.html' %}
+                    <form class="d-grid" name="contactForm" enctype="multipart/form-data" method="POST" onsubmit="return validateForm()">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <button type="submit" id="" class="btn btn-primary mt-4"> Enregistrer!</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock page_content %}
+
+{% block extra_javascript %}
+
+<script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  // target the SAME crispy field
+  const el = document.querySelector('select.js-courrier-search') || document.getElementById('id_courrier');
+  if (!el) return;
+
+  // if already initialized, destroy first to avoid duplicates
+  if (el.tomselect) { el.tomselect.destroy(); }
+
+  // init Tom Select
+  new TomSelect(el, {
+    create: false,
+    searchField: ['text'],
+    sortField: { field: 'text', direction: 'asc' },
+    placeholder: 'Tapez le code…',
+    allowEmptyOption: true,
+    maxOptions: 10000,
+    // Ajout de petites améliorations pratiques
+    shouldLoad: function(str) {
+        return str.length >= 1; // Lance la recherche dès 1 caractère
+    },
+    load: function(query, callback) {
+        // Garde le comportement existant mais plus réactif
+        callback();
+    }
+  });
+
+  // HARD HIDE the original select (in case CSS didn't)
+  el.classList.add('ts-hidden-accessible');
+  el.style.display = 'none';
+  el.style.position = 'absolute';
+  el.style.left = '-9999px';
+  el.style.width = '1px';
+  el.style.height = '1px';
+});
+</script>
+
+
+{% endblock extra_javascript %}
