@@ -173,6 +173,6 @@ GEMINI_API_KEY = "AIzaSyBMHUeyGC3pJmlYXAu0c6YzPpq2OyyK-Ds"
 X_FRAME_OPTIONS = "SAMEORIGIN"
 
 
-    # settings.py
+
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
