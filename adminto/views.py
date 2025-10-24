@@ -489,7 +489,7 @@ def envoi_email(request):
 import base64
 import io
 import numpy as np
-import cv2
+# import cv2
 from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse
 from .models import Capture
