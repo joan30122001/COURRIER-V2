@@ -45,10 +45,12 @@ INSTALLED_APPS = [
     "allauth.account",
     "allauth.mfa",
     "allauth.socialaccount",
+    "whitenoise.runserver_nostatic",
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware'
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -169,3 +171,8 @@ GEMINI_API_KEY = "AIzaSyBMHUeyGC3pJmlYXAu0c6YzPpq2OyyK-Ds"
 
 
 X_FRAME_OPTIONS = "SAMEORIGIN"
+
+
+    # settings.py
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
