@@ -66,5 +66,5 @@ urlpatterns = [
     path("archives/", views.scan_list, name="scan_list"),
     path("archives/<int:pk>/preview/", views.scan_preview, name="scan_preview"),
     path("archives/<int:pk>/download/", views.scan_download, name="scan_download"),
-    path("archives/<int:pk>/gemini/", views.scan_download_gemini, name="scan_download_gemini"),
+    # path("archives/<int:pk>/gemini/", views.scan_download_gemini, name="scan_download_gemini"),
 ]

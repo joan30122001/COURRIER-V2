@@ -34,7 +34,7 @@ import mimetypes
 from pathlib import Path
 # from .tools.tesseract_pdf import image_to_searchable_pdf_bytes
 
-from .tools.gemini_pdf import image_to_pdf_via_gemini
+# from .tools.gemini_pdf import image_to_pdf_via_gemini
 import google.generativeai as genai
 
 
@@ -1068,34 +1068,34 @@ def scan_download(request, pk: int):
     )
 
 
-def scan_download_gemini(request, pk: int):
-    """
-    Forcer le téléchargement du fichier.
-    - Si c'est une IMAGE, on passe par Gemini pour produire un PDF NATIF (texte copiable).
-    - Sinon, on renvoie le fichier tel quel.
-    """
-    scan = get_object_or_404(Scan, pk=pk)
-    if not scan.file:
-        raise Http404("Fichier introuvable.")
+# def scan_download_gemini(request, pk: int):
+#     """
+#     Forcer le téléchargement du fichier.
+#     - Si c'est une IMAGE, on passe par Gemini pour produire un PDF NATIF (texte copiable).
+#     - Sinon, on renvoie le fichier tel quel.
+#     """
+#     scan = get_object_or_404(Scan, pk=pk)
+#     if not scan.file:
+#         raise Http404("Fichier introuvable.")
 
-    name_lower = scan.file.name.lower()
-    is_image = name_lower.endswith(('.png', '.jpg', '.jpeg', '.webp', '.bmp', '.tif', '.tiff'))
+#     name_lower = scan.file.name.lower()
+#     is_image = name_lower.endswith(('.png', '.jpg', '.jpeg', '.webp', '.bmp', '.tif', '.tiff'))
 
-    if is_image:
-        try:
-            pdf_bytes = image_to_pdf_via_gemini(scan.file.path)  # <-- Gemini + WeasyPrint
-            filename = Path(scan.file.name).with_suffix(".pdf").name
-            resp = HttpResponse(pdf_bytes, content_type="application/pdf")
-            resp["Content-Disposition"] = f'attachment; filename="{filename}"'
-            return resp
-        except Exception as e:
-            # En cas d'échec Gemini, on retombe sur le fichier brut (pour ne pas bloquer l'utilisateur)
-            # Tu peux aussi "messages.error" + redirect si tu préfères
-            print("Gemini PDF error:", repr(e))
+#     if is_image:
+#         try:
+#             pdf_bytes = image_to_pdf_via_gemini(scan.file.path)  # <-- Gemini + WeasyPrint
+#             filename = Path(scan.file.name).with_suffix(".pdf").name
+#             resp = HttpResponse(pdf_bytes, content_type="application/pdf")
+#             resp["Content-Disposition"] = f'attachment; filename="{filename}"'
+#             return resp
+#         except Exception as e:
+#             # En cas d'échec Gemini, on retombe sur le fichier brut (pour ne pas bloquer l'utilisateur)
+#             # Tu peux aussi "messages.error" + redirect si tu préfères
+#             print("Gemini PDF error:", repr(e))
 
-    # Fallback: fichier tel quel (PDF original, etc.)
-    return FileResponse(
-        scan.file.open("rb"),
-        as_attachment=True,
-        filename=Path(scan.file.name).name,
-    )
+#     # Fallback: fichier tel quel (PDF original, etc.)
+#     return FileResponse(
+#         scan.file.open("rb"),
+#         as_attachment=True,
+#         filename=Path(scan.file.name).name,
+#     )
