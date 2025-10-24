@@ -611,6 +611,19 @@ def download_capture(request, capture_id):
 #     return response
 
 
+# def download_capture_pdf(request, capture_id):
+#     capture = get_object_or_404(Scan, id=capture_id)
+#     im = Image.open(capture.file.path).convert("RGB")
+#     buf = io.BytesIO()
+#     im.save(buf, format="PDF")
+#     buf.seek(0)
+#     resp = HttpResponse(buf.getvalue(), content_type="application/pdf")
+#     resp['Content-Disposition'] = 'attachment; filename={}'.format(
+#         smart_str(f"{capture.name}.pdf")
+#     )
+#     return resp
+
+
 def download_capture_pdf(request, capture_id):
     capture = get_object_or_404(Scan, id=capture_id)
     im = Image.open(capture.file.path).convert("RGB")
@@ -618,9 +631,7 @@ def download_capture_pdf(request, capture_id):
     im.save(buf, format="PDF")
     buf.seek(0)
     resp = HttpResponse(buf.getvalue(), content_type="application/pdf")
-    resp['Content-Disposition'] = 'attachment; filename={}'.format(
-        smart_str(f"{capture.name}.pdf")
-    )
+    resp['Content-Disposition'] = f'attachment; filename={smart_str(capture.name)}.pdf'
     return resp
 
 
