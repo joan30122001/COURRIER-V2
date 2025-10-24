@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     "allauth.account",
     "allauth.mfa",
     "allauth.socialaccount",
-    "whitenoise.runserver_nostatic",
 ]
 
 MIDDLEWARE = [
