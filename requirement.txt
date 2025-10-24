@@ -14,3 +14,4 @@ numpy==2.2.5
 pillow==11.1.0
 shortuuid==1.0.13
 xhtml2pdf==0.2.9
+whitenoise==6.8.2
