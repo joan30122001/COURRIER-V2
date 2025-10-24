@@ -1,0 +1,513 @@
+/*
+Items Name : Akonta
+Author : Ngetemplates
+-------------------------------- */
+/* ------------------------------
+  Import Google Web Font
+---------------------------------*/
+@import url("https://fonts.googleapis.com/css2?family=Heebo:wght@100;200;300;400;500;600;700;800;900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+/* ------------------------------
+  General
+---------------------------------*/
+body {
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+  font-family: 'Raleway', sans-serif;
+  background: #ffffff;
+  color: #5a5a5a;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Heebo', sans-serif;
+  padding: 0;
+  margin: 0;
+  color: #2a2a2a;
+}
+
+h1 {
+  font-size: 58px;
+  line-height: 65px;
+  font-weight: 600;
+  position: relative;
+  margin-bottom: 20px;
+}
+
+h2 {
+  font-size: 42px;
+  font-weight: 600;
+  line-height: 50px;
+  margin-bottom: 20px;
+}
+
+h3 {
+  font-size: 24px;
+}
+
+h4 {
+  font-size: 22px;
+}
+
+h5 {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 22px;
+  font-family: 'Roboto', sans-serif;
+}
+
+h6 {
+  font-size: 18px;
+}
+
+a {
+  text-decoration: none;
+  color: #464646;
+}
+
+a:hover {
+  color: #277556;
+}
+
+p {
+  margin: 5px 0 15px;
+  line-height: 28px;
+  letter-spacing: 0.5px;
+}
+
+ul {
+  padding: 0;
+  margin: 0;
+}
+ul li {
+  list-style: none;
+}
+
+img {
+  width: 100%;
+}
+
+/* ------------------------------
+  loader
+---------------------------------*/
+.loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  background-color: #2d3e50;
+}
+
+.loader .loading {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.loader .loading .aloader {
+  background: #2d3e50;
+  color: #277556;
+}
+
+/* ------------------------------
+  button
+---------------------------------*/
+.button {
+  padding: 12px 30px;
+  background: #277556;
+  color: #ffffff;
+  font-size: 13px;
+  letter-spacing: 1px;
+  border-radius: 1px;
+  border: 0;
+  transition: 0.2s;
+  font-weight: 600;
+}
+
+.button:hover {
+  background: #101010;
+  color: #2d3e50;
+  border-color: transparent;
+}
+
+.button2 {
+  padding: 12px 30px;
+  background: #277556;
+  color: #fff;
+  font-size: 13px;
+  letter-spacing: 1px;
+  border-radius: 1px;
+  transition: 0.2s;
+  font-weight: 600;
+  border: 0;
+}
+
+.button2:hover {
+  background: #ffffff;
+  color: #2d3e50;
+}
+
+/* ------------------------------
+  navbar
+---------------------------------*/
+.navbar {
+  top: 0;
+  background: #2d3e50;
+  padding: 25px 0;
+  position: fixed;
+  width: 100%;
+  z-index: 99;
+  text-align: center;
+}
+.navbar .navbar-brand {
+  text-align: left;
+  width: 20%;
+}
+.navbar .navbar-brand img {
+  height: 40px;
+  width: auto;
+}
+.navbar .navbar-toggler {
+  padding: 0;
+}
+.navbar .navbar-toggler i {
+  font-size: 32px;
+  color: #ffffff;
+}
+.navbar .navbar-toggler:focus {
+  box-shadow: none;
+}
+.navbar .navbar-collapse {
+  position: relative;
+  width: 60%;
+  text-align: center;
+  left: -10px;
+}
+.navbar .navbar-nav {
+  margin-right: auto;
+  margin-left: auto;
+}
+.navbar .navbar-nav li {
+  padding: 0 10px;
+}
+.navbar .navbar-nav li a {
+  color: #ffffff;
+  font-weight: 500;
+}
+.navbar .navbar-nav li a:hover {
+  color: #277556;
+}
+.navbar .button-navbar {
+  width: 20%;
+  float: right;
+  text-align: right;
+}
+.navbar .button-navbar li {
+  display: inline-block;
+  margin-left: 15px;
+}
+
+.navbar-fixed {
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0);
+}
+
+/* ------------------------------
+  intro
+---------------------------------*/
+.intro {
+  margin-top: 92px;
+  background: #2d3e50;
+  color: #eee;
+  padding: 80px 0 100px;
+}
+.intro h1 {
+  color: #ffffff;
+}
+.intro .content-image {
+  text-align: right;
+  margin-right: 20px;
+}
+.intro .content-image img {
+  transform: rotate(8deg);
+  position: relative;
+  width: 80%;
+}
+.intro .button {
+  margin-top: 20px;
+}
+
+/* ------------------------------
+  title stripe
+---------------------------------*/
+.the-title {
+  font-size: 14px;
+  letter-spacing: 1px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #2d3e50;
+}
+.the-title span {
+  height: 1px;
+  width: 40px;
+  background: #2a2a2a;
+  display: inline-block;
+  bottom: 5px;
+  position: relative;
+  margin-right: 12px;
+}
+
+/* ------------------------------
+  about
+---------------------------------*/
+.about {
+  padding-top: 120px;
+  padding-bottom: 120px;
+}
+.about ul li {
+  padding: 5px 0;
+  font-weight: 500;
+  color: #2a2a2a;
+}
+.about ul li i {
+  color: #277556;
+  margin-right: 10px;
+}
+
+/* ------------------------------
+  achievement
+---------------------------------*/
+.achievement {
+  text-align: center;
+}
+.achievement i {
+  color: #277556;
+  font-size: 60px;
+}
+.achievement h2 {
+  margin: 10px 0;
+}
+.achievement .content {
+  padding: 50px 0 35px;
+  background: #f3f6f9;
+}
+
+/* ------------------------------
+  services
+---------------------------------*/
+.services {
+  padding-top: 120px;
+  padding-bottom: 80px;
+}
+.services h2 {
+  margin-bottom: 20px;
+}
+.services .content-left {
+  margin-right: 60px;
+}
+.services .content-right {
+  margin-right: 30px;
+  margin-left: 30px;
+}
+.services .content {
+  margin: 40px 0;
+}
+.services .content img {
+  height: 60px;
+  width: auto;
+}
+.services .content h5 {
+  margin: 20px 0;
+}
+
+/* ------------------------------
+  testimonial
+---------------------------------*/
+.testimonial {
+  color: #eee;
+}
+.testimonial h5 {
+  color: #ffffff;
+  margin-bottom: 3px;
+}
+.testimonial span {
+  font-weight: 500;
+}
+.testimonial .content-box {
+  padding: 30px;
+  background: #2d3e50;
+}
+.testimonial .content-image {
+  display: inline-block;
+  width: 50%;
+}
+.testimonial .content {
+  padding: 40px;
+}
+.testimonial .content i {
+  font-size: 56px;
+  color: #277556;
+}
+.testimonial .swiper {
+  float: right;
+  width: 50%;
+  margin-top: 40px;
+  cursor: pointer;
+}
+
+/* ------------------------------
+clients
+---------------------------------*/
+.clients {
+  padding-top: 60px;
+  padding-bottom: 60px;
+  background: #f3f6f9;
+  padding-left: 30px;
+  padding-right: 30px;
+}
+.clients img {
+  padding: 0 30px;
+}
+
+/* ------------------------------
+  contact
+---------------------------------*/
+.contact {
+  padding-top: 100px;
+  padding-bottom: 30px;
+  font-size: 16px;
+  font-weight: 500;
+}
+.contact h5 {
+  margin-bottom: 15px;
+}
+
+/* ------------------------------
+  footer
+---------------------------------*/
+footer .row {
+  border-top: 1px solid #eef3f7;
+  padding: 30px 0;
+}
+
+footer ul {
+  text-align: right;
+}
+
+footer ul li {
+  display: inline-block;
+}
+
+footer ul li i {
+  font-size: 20px;
+  margin-left: 10px;
+}
+
+footer ul li i:hover {
+  color: #277556;
+}
+
+/* ------------------------------
+  responsive
+---------------------------------*/
+@media (max-width: 991px) {
+  .navbar .button-navbar {
+    display: none;
+  }
+
+  .clients img {
+    padding: 0 15px;
+  }
+
+  .about .col-md-7 {
+    width: 100%;
+  }
+
+  .about .content {
+    padding-top: 0;
+  }
+
+  .testimonial .content-image {
+    width: 100%;
+  }
+
+  .testimonial .swiper {
+    width: 100%;
+    float: none;
+  }
+
+  .testimonial .content {
+    padding: 0;
+  }
+
+  .col-contact {
+    width: 100%;
+  }
+}
+@media (max-width: 767px) {
+  .intro .content-image {
+    text-align: right;
+    margin-right: 44px;
+    margin-top: 60px;
+  }
+
+  .clients {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .clients img {
+    padding: 0 5px;
+  }
+
+  .services .content-left {
+    margin-right: 0;
+  }
+
+  .services .content-right {
+    margin-right: 0;
+    margin-left: 0;
+  }
+
+  .contact span {
+    margin-bottom: 20px;
+    display: block;
+  }
+}
+@media (max-width: 575px) {
+  .container {
+    padding: 0 25px;
+  }
+
+  h1 {
+    font-size: 48px;
+    line-height: 53px;
+  }
+
+  .clients img {
+    padding: 0 80px;
+    margin: 20px 0;
+  }
+
+  h2 {
+    font-size: 36px;
+    line-height: 45px;
+  }
+
+  footer {
+    text-align: center;
+  }
+  footer ul {
+    text-align: center;
+    margin-bottom: 12px;
+  }
+  footer .reverse {
+    flex-direction: column-reverse !important;
+  }
+}
