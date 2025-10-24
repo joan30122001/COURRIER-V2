@@ -275,14 +275,20 @@ def result_chef(request):
 
 
 
+# def courrier_pdf(request, pk):
+#     user_courrier = Courrier.objects.get(pk=pk)
+
+#     context = {
+#         "user_courrier": user_courrier,
+#     }
+    
+#     pdf = render_to_pdf('courrier_pdf.html', context)
+#     return HttpResponse(pdf, content_type='application/pdf')
+
+
 def courrier_pdf(request, pk):
     user_courrier = Courrier.objects.get(pk=pk)
-
-    context = {
-        "user_courrier": user_courrier,
-    }
-    
-    pdf = render_to_pdf('courrier_pdf.html', context)
+    pdf = render_to_pdf('courrier_pdf.html', {"user_courrier": user_courrier})
     return HttpResponse(pdf, content_type='application/pdf')
 
 
@@ -589,21 +595,33 @@ def download_capture(request, capture_id):
     response['Content-Disposition'] = 'attachment; filename={}'.format(smart_str(capture.name + '.png'))
     return response
 
+# def download_capture_pdf(request, capture_id):
+#     capture = get_object_or_404(Scan, id=capture_id)
+#     response = HttpResponse(content_type='application/pdf')
+#     response['Content-Disposition'] = 'attachment; filename={}'.format(smart_str(capture.name + '.pdf'))
+#     buffer = io.BytesIO()
+#     pdf = canvas.Canvas(buffer, pagesize=letter)
+#     img = ImageReader(capture.file.path)
+#     pdf.drawImage(img, 0, 0, width=letter[0], height=letter[1])
+#     pdf.showPage()
+#     pdf.save()
+#     pdf_data = buffer.getvalue()
+#     buffer.close()
+#     response.write(pdf_data)
+#     return response
+
+
 def download_capture_pdf(request, capture_id):
     capture = get_object_or_404(Scan, id=capture_id)
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename={}'.format(smart_str(capture.name + '.pdf'))
-    buffer = io.BytesIO()
-    pdf = canvas.Canvas(buffer, pagesize=letter)
-    img = ImageReader(capture.file.path)
-    pdf.drawImage(img, 0, 0, width=letter[0], height=letter[1])
-    pdf.showPage()
-    pdf.save()
-    pdf_data = buffer.getvalue()
-    buffer.close()
-    response.write(pdf_data)
-    return response
-
+    im = Image.open(capture.file.path).convert("RGB")
+    buf = io.BytesIO()
+    im.save(buf, format="PDF")
+    buf.seek(0)
+    resp = HttpResponse(buf.getvalue(), content_type="application/pdf")
+    resp['Content-Disposition'] = 'attachment; filename={}'.format(
+        smart_str(f"{capture.name}.pdf")
+    )
+    return resp
 
 
 
